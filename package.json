@@ -1,0 +1,64 @@
+{
+	"name": "directus-clerk",
+	"description": "Directus extension for Clerk integration",
+	"icon": "extension",
+	"version": "1.0.0",
+	"keywords": [
+		"directus",
+		"directus-extension",
+		"directus-extension-bundle"
+	],
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"directus:extension": {
+		"type": "bundle",
+		"path": {
+			"app": "dist/app.js",
+			"api": "dist/api.js"
+		},
+		"entries": [
+			{
+				"type": "operation",
+				"name": "decode-clerk-jwt",
+				"source": {
+					"app": "src/decode-clerk-jwt/app.ts",
+					"api": "src/decode-clerk-jwt/api.ts"
+				}
+			},
+			{
+				"type": "operation",
+				"name": "sync-clerk-user",
+				"source": {
+					"app": "src/sync-clerk-user/app.ts",
+					"api": "src/sync-clerk-user/api.ts"
+				}
+			},
+			{
+				"type": "hook",
+				"name": "clerk-auth-provider",
+				"source": "src/clerk-auth-provider/index.ts"
+			}
+		],
+		"host": "^10.10.0"
+	},
+	"scripts": {
+		"build": "directus-extension build",
+		"dev": "directus-extension build -w --no-minify",
+		"link": "directus-extension link",
+		"validate": "directus-extension validate",
+		"add": "directus-extension add"
+	},
+	"devDependencies": {
+		"@directus/extensions-sdk": "13.0.4",
+		"@types/jsonwebtoken": "^9.0.5",
+		"@types/node": "^22.15.3",
+		"typescript": "^5.8.3",
+		"vue": "^3.5.13"
+	},
+	"dependencies": {
+		"@clerk/clerk-sdk-node": "^4.13.23",
+		"jsonwebtoken": "^9.0.2"
+	}
+}
