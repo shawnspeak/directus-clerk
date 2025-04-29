@@ -33,6 +33,7 @@ export default defineOperationApi<Options>({
 			console.log('directus user', directusUser);
 
 			// If the user is not found in Directus, create a new user
+			let userAdded = false;
 			if (!directusUser) {
 				const newUser = {
 					id: randomUUID(),
@@ -40,18 +41,19 @@ export default defineOperationApi<Options>({
 					email: clerkUser.emailAddresses?.[0]?.emailAddress,
 					first_name: clerkUser.firstName,
 					last_name: clerkUser.lastName,
-					role: new_user_role_id
+					role: new_user_role_id,
 				};
 				const [createdUser] = await database('directus_users')
 					.insert(newUser)
 					.returning('*');
 				console.log('Created new Directus user:', createdUser);
+				userAdded = true;
 			} else {
 				// If the user exists, update their information
 				const updatedUser = {
 					email: clerkUser.emailAddresses?.[0]?.emailAddress,
 					first_name: clerkUser.firstName,
-					last_name: clerkUser.lastName
+					last_name: clerkUser.lastName,
 				};
 				await database('directus_users')
 					.update(updatedUser)
@@ -59,23 +61,15 @@ export default defineOperationApi<Options>({
 				console.log('Updated Directus user:', updatedUser);
 			}
 
-
-			// Return both the Clerk user data and the Directus user data if found
+			// Return the user data that was synced and indicate if it was a new user
 			return {
 				success: true,
-				clerkUser: {
-					id: clerkUser.id,
-					firstName: clerkUser.firstName,
-					lastName: clerkUser.lastName,
+				user: {
+					first_name: clerkUser.firstName,
+					last_name: clerkUser.lastName,
 					email: clerkUser.emailAddresses?.[0]?.emailAddress,
-					username: clerkUser.username,
-					imageUrl: clerkUser.imageUrl,
-					metadata: clerkUser.publicMetadata,
-					lastSignInAt: clerkUser.lastSignInAt,
-					createdAt: clerkUser.createdAt,
-					updatedAt: clerkUser.updatedAt
-				},
-				directusUser: directusUser || null
+					new: userAdded
+				}
 			};
 		} catch (error) {
 			console.error('Error fetching user from Clerk:', error);

@@ -59,6 +59,7 @@
 	},
 	"dependencies": {
 		"@clerk/clerk-sdk-node": "^4.13.23",
+		"@directus/memory": "^3.0.3",
 		"jsonwebtoken": "^9.0.2"
 	}
 }
