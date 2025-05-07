@@ -1,0 +1,38 @@
+name: Release
+
+# Controls when the workflow will run
+on:
+  push:
+   tags:
+    - 'v*'
+
+jobs:
+  
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build files
+        run: npm run build
+        
+      - name: Add release to Github
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/app.js,dist/api.js,package.json"
+          generateReleaseNotes: true
+
+      - name: Add release to npm 
+        run: npm publish --no-git-checks # --no-git-checks as we're not on a branch but a tag!
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
